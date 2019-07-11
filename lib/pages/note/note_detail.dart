@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:pwdflutter/db/account.model.dart' show Account;
+import './editNote/edit_web_name.dart';
+import './editNote/edit_account_name.dart';
+import './editNote/edit_phone.dart';
+import './editNote/edit_email.dart';
+import './editNote/edit_phone.dart';
+import './editNote/edit_password.dart';
 
 class NoteDetailPage extends StatefulWidget {
+  final Account noteDetail;
+  NoteDetailPage(this.noteDetail);
   @override
   State<StatefulWidget> createState() {
     return _NoteDetail();
@@ -13,22 +22,31 @@ class _NoteDetail extends State<NoteDetailPage> {
     super.initState();
   }
 
+  _toEdit(page) {
+    return () => Navigator.push(
+              context, MaterialPageRoute(builder: (context) => page));
+  }
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: Text('详情'),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+
+            },
+            child: Text('历史', style: TextStyle(color: Colors.white),),
+          )
+        ],
       ),
       body: ListView(
         children: <Widget>[
-          NoteListItem('网站', '缺B乐'),
-          ListTile(title: Text('网站'), trailing: Text('缺B乐'),),
-          Divider(),
-          NoteListItem('账号', '563693600@qq.com'),
-          NoteListItem('邮箱', '563693600@qq.com'),
-          NoteListItem('手机号', '563693600@qq.com'),
-          NoteListItem('密码', '563693600@qq.com'),
+          NoteListItem('网站', widget.noteDetail.webName, _toEdit(EditWebNamePage(widget.noteDetail))),
+          NoteListItem('用户名', widget.noteDetail.account, _toEdit(EditAccountNamePage(widget.noteDetail))),
+          NoteListItem('邮箱', widget.noteDetail.email,  _toEdit(EditEmailPage(widget.noteDetail))),
+          NoteListItem('手机号', widget.noteDetail.phone, _toEdit(EditPhonePage(widget.noteDetail))),
+          NoteListItem('密码', widget.noteDetail.password, _toEdit(EditPasswordPage(widget.noteDetail))),
         ],
       ),
     );
@@ -40,7 +58,7 @@ class NoteListItem extends StatelessWidget {
   final String title;
   final value;
   final Function ontap;
-  NoteListItem(this.title, this.value, {this.ontap});
+  NoteListItem(this.title, this.value, [this.ontap]);
   @override
   Widget build(BuildContext context) {
     return InkWell(

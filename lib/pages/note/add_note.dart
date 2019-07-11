@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import './note.service.dart' show NoteService;
+import 'package:pwdflutter/db/account.model.dart' show Account;
+
 class AddNotePage extends StatefulWidget {
   AddNotePage({Key key}) : super(key: key);
 
@@ -7,14 +10,13 @@ class AddNotePage extends StatefulWidget {
 }
 
 class _AddNotePageState extends State<AddNotePage> {
-  String _webSiteName;
-  String _userName;
-  String _password;
+  Account _account = new Account();
   TextEditingController _websiteController = TextEditingController();
   TextEditingController _uNameController = TextEditingController();
   TextEditingController _pwdController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  GlobalKey<FormFieldState> _webKey = GlobalKey<FormFieldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +25,7 @@ class _AddNotePageState extends State<AddNotePage> {
         ),
         body: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: <Widget>[
               Row(
                 children: <Widget>[
@@ -32,17 +34,12 @@ class _AddNotePageState extends State<AddNotePage> {
                 ],
               ),
               TextFormField(
-                key: _webKey,
                 controller: _websiteController,
                 decoration: InputDecoration(
-                    // errorText: '请输入账号所属网站名称或地址'
+                    // errorText: '请输入用户名所属网站名称或地址'
                     ),
-                onSaved: (val) => this._webSiteName = val,
-                validator: (val) {
-                  print(val);
-                  print('0000000000000000000000');
-                  return val.isEmpty || val == null ? '请输入账号所属网站名称或地址' : null;
-                },
+                onSaved: (val) => this._account.webName = val,
+                validator: (val) => val.isEmpty || val == null ? '请输入用户名所属网站名称或地址' : null,
               ),
               Row(
                 children: <Widget>[
@@ -53,10 +50,23 @@ class _AddNotePageState extends State<AddNotePage> {
               TextFormField(
                 controller: _uNameController,
                 // decoration: InputDecoration(errorText: '请输入用户名'),
-                onSaved: (val) => this._userName = val,
-                validator: (val) {
-                  return val.isEmpty ? '请输入用户名' : null;
+                onSaved: (val) => this._account.account = val,
+                validator: (val) => val.isEmpty ? '请输入用户名' : null,
+              ),
+              Text('邮箱'),
+              TextFormField(
+                controller: _emailController,
+                onSaved: (val) => this._account.email = val,
+              ),
+              Text('手机号'),
+              TextFormField(
+                controller: _phoneController,
+                // decoration: InputDecoration(errorText: '请输入用户名'),
+                keyboardType: TextInputType.phone,
+                onSaved: (val){
+                  this._account.phone = val;
                 },
+                validator: (val) => val.isEmpty ? '请输入用户名' : null,
               ),
               Row(
                 children: <Widget>[
@@ -66,19 +76,24 @@ class _AddNotePageState extends State<AddNotePage> {
               ),
               TextFormField(
                 controller: _pwdController,
-                // decoration: InputDecoration(errorText: '请输入密码'),
-                onSaved: (val) => this._password = val,
+                obscureText: true,
+                decoration: InputDecoration(),
                 validator: (val) {
                   return val.isEmpty ? '请输入密码' : null;
+                },
+                onSaved: (val) {
+                  this._account.password = val;
                 },
               ),
               RaisedButton(
                 color: Theme.of(context).primaryColor,
                 onPressed: () {
-                  _formKey.currentState;
-                  // _websiteController.
-                  _webKey.currentState.save();
-                  _formKey.currentState.save();
+                  var form = _formKey.currentState;
+                  if (form.validate()) {
+                    form.save();
+                    NoteService.addAccount(_account);
+                    Navigator.pop(context, true);
+                  }
                 },
                 child: Text(
                   '保存',
