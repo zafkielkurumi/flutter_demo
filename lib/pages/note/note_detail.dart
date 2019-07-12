@@ -4,8 +4,8 @@ import './editNote/edit_web_name.dart';
 import './editNote/edit_account_name.dart';
 import './editNote/edit_phone.dart';
 import './editNote/edit_email.dart';
-import './editNote/edit_phone.dart';
 import './editNote/edit_password.dart';
+import './password_history.dart';
 
 class NoteDetailPage extends StatefulWidget {
   final Account noteDetail;
@@ -34,7 +34,8 @@ class _NoteDetail extends State<NoteDetailPage> {
         actions: <Widget>[
           FlatButton(
             onPressed: () {
-
+              Navigator.push(
+              context, MaterialPageRoute(builder: (context) => PasswordHistory(widget.noteDetail.historyPassword)));
             },
             child: Text('历史', style: TextStyle(color: Colors.white),),
           )

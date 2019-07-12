@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:convert';
 
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
+import 'package:popup_menu/popup_menu.dart';
 
 import './note_detail.dart';
 import './add_note.dart';
@@ -35,8 +35,16 @@ class _NotesState extends State<NotesPage> {
     return await NoteService.getList();
   }
 
+  static Rect getWidgetGlobalRect(GlobalKey key) {
+    RenderBox renderBox = key.currentContext.findRenderObject();
+    var offset = renderBox.localToGlobal(Offset.zero);
+    return Rect.fromLTWH(
+        offset.dx, offset.dy, renderBox.size.width, renderBox.size.height);
+  }
+
   GlobalKey<EasyRefreshState> _easyRefreshKey =
       new GlobalKey<EasyRefreshState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +56,17 @@ class _NotesState extends State<NotesPage> {
         child: ListView.builder(
           itemCount: this.noteList.length,
           itemBuilder: (BuildContext context, int index) {
-            return NoteItem(this.noteList[index]);
+            Account account = this.noteList[index];
+            return index.isEven
+                ? Dismissible(
+                    key: Key('$index'),
+                    child: NoteItem(account),
+                    onDismissed: (d) {
+                      this.noteList.removeAt(index);
+                    },
+                  )
+                : NoteItem(account);
+            // return NoteItem(this.noteList[index]);
           },
         ),
         refreshHeader: MaterialHeader(
@@ -56,26 +74,25 @@ class _NotesState extends State<NotesPage> {
         ),
         refreshFooter: MaterialFooter(key: _footerKey),
         onRefresh: () async {
-         try {
+          try {
             List list = await _getList();
-          setState(() {
-            this.noteList = list;
-          });
-         } catch (e) {
-           _easyRefreshKey.currentState.callLoadMoreFinish();
-         }
+            setState(() {
+              this.noteList = list;
+            });
+          } catch (e) {
+            _easyRefreshKey.currentState.callLoadMoreFinish();
+          }
         },
         loadMore: () {},
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () async {
-         var res =  await Navigator.push(
+          var res = await Navigator.push(
               context, MaterialPageRoute(builder: (context) => AddNotePage()));
           // App.router.navigateTo(context, '/addNote');
           if (res == true) {
-          _easyRefreshKey.currentState.callRefresh();
-
+            _easyRefreshKey.currentState.callRefresh();
           }
         },
       ),
@@ -84,16 +101,37 @@ class _NotesState extends State<NotesPage> {
 }
 
 class NoteItem extends StatelessWidget {
-  final Account noteItem;
-  NoteItem(this.noteItem);
+  final Account _account;
+  GlobalKey _key = GlobalKey();
+  NoteItem(this._account);
+
+  _showmenu(GlobalKey key, BuildContext context) {
+    final RenderBox button = key.currentContext.findRenderObject();
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        button.localToGlobal(Offset.zero, ancestor: overlay),
+        button.localToGlobal(button.size.bottomRight(Offset.zero),
+            ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+    showMenu(context: context, position: position, items: <PopupMenuEntry>[
+      PopupMenuItem(
+        child: Text('删除'),
+      )
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      onLongPress: () {
+        _showmenu(_key, context);
+      },
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => NoteDetailPage(this.noteItem)));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => NoteDetailPage(_account)));
       },
       child: Container(
         padding: EdgeInsets.all(5),
@@ -112,14 +150,17 @@ class NoteItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          this.noteItem.webName,
+                          this._account.webName,
                           style: TextStyle(color: Colors.pink),
                         ),
-                        Text(DateFormat('yyyy-MM-dd')
-                            .format(this.noteItem.genTime))
+                        Text(
+                          DateFormat('yyyy-MM-dd')
+                              .format(this._account.genTime),
+                          key: _key,
+                        )
                       ],
                     ),
-                    Text(this.noteItem.account),
+                    Text(this._account.account),
                   ],
                 ),
               ),

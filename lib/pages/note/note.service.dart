@@ -30,7 +30,8 @@ class NoteService {
   static updatePassword(Account account) async {
     Database db = await DbHelper().open();
     AccountProvider accountProvider = AccountProvider(db);
-    
+    await accountProvider.getDetail(account.id);
+    account.historyPassword.add({'password': account.password, 'updateTime':  DateTime.now()});
     await accountProvider.updateAccount(account);
     db.close();
     return;

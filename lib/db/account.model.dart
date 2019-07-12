@@ -23,7 +23,7 @@ class Account {
   String phone;
   DateTime updateTime;
   DateTime genTime;
-  List<String> historyPassword;
+  List<dynamic> historyPassword;
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -35,14 +35,12 @@ class Account {
       colUpdateTime: DateTime.now().millisecondsSinceEpoch,
       colSalt: salt
     };
-    if (historyPassword != null) {
-      map[colHistoryPassword] = json.encode(historyPassword);
-    }
+     map[colHistoryPassword] =  json.encode(historyPassword ?? []);
     map[colGenTime] = genTime != null ? genTime.millisecondsSinceEpoch : DateTime.now().millisecondsSinceEpoch;
     return map;
   }
 
-  Account([this.webName, this.account, this.password]);
+  Account();
 
   Account.fromMap(Map<String, dynamic> map) {
     id = map[colId];
@@ -102,6 +100,11 @@ class AccountProvider {
     return List.generate(list.length, (i){
       return Account.fromMap(list[i]);
     });
+  }
+
+  Future<Account> getDetail(int id) async {
+    var res = await db.query(tableName);
+    return res.isNotEmpty ? Account.fromMap(res[0]) : null;
   }
 
   void clear() async => await db.close();
