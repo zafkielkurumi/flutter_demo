@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pwdflutter/db/account.model.dart' show Account;
-import './editNote/edit_web_name.dart';
-import './editNote/edit_account_name.dart';
-import './editNote/edit_phone.dart';
-import './editNote/edit_email.dart';
-import './editNote/edit_password.dart';
-import './password_history.dart';
 
 class NoteDetailPage extends StatefulWidget {
   final Account noteDetail;
@@ -22,9 +16,9 @@ class _NoteDetail extends State<NoteDetailPage> {
     super.initState();
   }
 
-  _toEdit(page) {
-    return () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => page));
+  _toEdit(String page, Object arguments) {
+    return () => Navigator.pushNamed(
+              context, page, arguments: arguments);
   }
   @override
   Widget build(BuildContext context) {
@@ -34,8 +28,8 @@ class _NoteDetail extends State<NoteDetailPage> {
         actions: <Widget>[
           FlatButton(
             onPressed: () {
-              Navigator.push(
-              context, MaterialPageRoute(builder: (context) => PasswordHistory(widget.noteDetail.historyPassword)));
+              Navigator.pushNamed(
+              context, '/note_history', arguments: widget.noteDetail.historyPassword);
             },
             child: Text('历史', style: TextStyle(color: Colors.white),),
           )
@@ -43,11 +37,11 @@ class _NoteDetail extends State<NoteDetailPage> {
       ),
       body: ListView(
         children: <Widget>[
-          NoteListItem('网站', widget.noteDetail.webName, _toEdit(EditWebNamePage(widget.noteDetail))),
-          NoteListItem('用户名', widget.noteDetail.account, _toEdit(EditAccountNamePage(widget.noteDetail))),
-          NoteListItem('邮箱', widget.noteDetail.email,  _toEdit(EditEmailPage(widget.noteDetail))),
-          NoteListItem('手机号', widget.noteDetail.phone, _toEdit(EditPhonePage(widget.noteDetail))),
-          NoteListItem('密码', widget.noteDetail.password, _toEdit(EditPasswordPage(widget.noteDetail))),
+          NoteListItem('网站', widget.noteDetail.webName, _toEdit('/edit_web_name', widget.noteDetail)),
+          NoteListItem('用户名', widget.noteDetail.account, _toEdit('/edit_account_name', widget.noteDetail)),
+          NoteListItem('邮箱', widget.noteDetail.email,  _toEdit('/edit_email', widget.noteDetail)),
+          NoteListItem('手机号', widget.noteDetail.phone, _toEdit('/edit_phone', widget.noteDetail)),
+          NoteListItem('密码', widget.noteDetail.password, _toEdit('/edit_password', widget.noteDetail)),
         ],
       ),
     );
@@ -71,12 +65,12 @@ class NoteListItem extends StatelessWidget {
               ),
               child: Row(
               children: <Widget>[
-                Text(this.title),
+                Text('${this.title ?? ''}'),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      Text(this.value),
+                      Text('${this.value ?? ''}'),
                       Icon(Icons.keyboard_arrow_right)
                     ],
                   ),

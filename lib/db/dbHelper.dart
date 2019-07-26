@@ -16,6 +16,7 @@ class DbHelper {
     print('database 实例化');
   }
 
+  get  path async => await _initPath();
   static _getInstence() {
     if (_instence != null) {
       return _instence;
@@ -24,7 +25,7 @@ class DbHelper {
     return _instence;
   }
 
-  _initPath() async {
+  Future<String> _initPath() async {
     final dbPath = await getDatabasesPath();
     return join(dbPath, dbName);
   }

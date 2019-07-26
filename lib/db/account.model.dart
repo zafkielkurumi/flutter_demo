@@ -35,7 +35,7 @@ class Account {
       colUpdateTime: DateTime.now().millisecondsSinceEpoch,
       colSalt: salt
     };
-     map[colHistoryPassword] =  json.encode(historyPassword ?? []);
+    map[colHistoryPassword] =  json.encode(historyPassword ?? []);
     map[colGenTime] = genTime != null ? genTime.millisecondsSinceEpoch : DateTime.now().millisecondsSinceEpoch;
     return map;
   }
@@ -54,6 +54,7 @@ class Account {
     genTime = DateTime.fromMillisecondsSinceEpoch(map[colGenTime]);
     if (map[colHistoryPassword] != null) {
       historyPassword = json.decode(map[colHistoryPassword]);
+      // historyPassword = historyPassword.reversed;
     }
   }
 }
@@ -84,6 +85,13 @@ class AccountProvider {
     return account;
   }
 
+  Future<List> rawInsert(List accounts) async {
+   int id = await  db.rawInsert('insert into $tableName', accounts);
+   print(id);
+   print('idddddddddddddds');
+   return accounts;
+  }
+
   Future<int> updateAccount(Account account) async {
     return await db.update(tableName, account.toMap(), where: '$colId = ?', whereArgs: [account.id]);
   }
@@ -92,8 +100,9 @@ class AccountProvider {
   Future<List<Account>> getList({limit = 10, page = 1, serchKey = ''}) async {
     final offset = (page - 1) * limit;
     List<Map> list = await db.query(tableName,
-        limit: limit,
-        offset: offset);
+        // limit: limit,
+        // offset: offset
+        );
     // return list.map((r) {
     //   return Account.fromMap(r);
     // }).toList();
@@ -103,8 +112,13 @@ class AccountProvider {
   }
 
   Future<Account> getDetail(int id) async {
-    var res = await db.query(tableName);
-    return res.isNotEmpty ? Account.fromMap(res[0]) : null;
+    var res = await db.query(tableName, where: '$colId = ?', whereArgs: [id]);
+    return res.isNotEmpty ? Account.fromMap(res.first) : null;
+  }
+
+  Future<int> deleteAccount(int id) async {
+    var res = await db.delete(tableName,  where: '$colId = ?', whereArgs: [id]);
+    return res;
   }
 
   void clear() async => await db.close();

@@ -30,10 +30,21 @@ class NoteService {
   static updatePassword(Account account) async {
     Database db = await DbHelper().open();
     AccountProvider accountProvider = AccountProvider(db);
-    await accountProvider.getDetail(account.id);
-    account.historyPassword.add({'password': account.password, 'updateTime':  DateTime.now()});
+    Account oldAccount = await accountProvider.getDetail(account.id);
+   account.historyPassword
+    .insert(0, {'password': oldAccount.password, 'updateTime':  DateTime.now().millisecondsSinceEpoch});
+     account.historyPassword =   account.historyPassword.sublist(0, account.historyPassword.length > 10 ? 10 : null);
     await accountProvider.updateAccount(account);
     db.close();
     return;
+  }
+
+
+  static deleteAccount(Account account) async {
+    Database db = await DbHelper().open();
+    AccountProvider accountProvider = AccountProvider(db);
+    int res  =  await accountProvider.deleteAccount(account.id);
+    db.close();
+    return res;
   }
 }

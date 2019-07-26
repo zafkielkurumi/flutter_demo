@@ -25,7 +25,7 @@ class _EditPassword extends State<EditPasswordPage> {
             onPressed: () async {
               if (_key.currentState.validate()) {
                 _key.currentState.save();
-                await NoteService.updateAccount(widget._account);
+                await NoteService.updatePassword(widget._account);
                 Navigator.pop(context);
               }
             },

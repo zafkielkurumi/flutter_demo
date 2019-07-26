@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class PasswordHistory extends StatelessWidget {
   List _historys = [];
@@ -12,8 +13,8 @@ class PasswordHistory extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           final history = this._historys[index];
           return ListTile(
-            title: history['password'],
-            trailing: Text(history['updateTime']),
+            title: Text('${history['password'] ?? ''}'),
+            trailing: Text('${history['updateTime'] != null ? DateFormat('yyyy-MM-dd').format(DateTime.fromMillisecondsSinceEpoch(history['updateTime'])) : ''}'),
           );
         },
       ),
