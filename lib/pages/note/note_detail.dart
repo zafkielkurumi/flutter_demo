@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:local_auth/auth_strings.dart';
+
+
 import 'package:pwdflutter/db/account.model.dart' show Account;
 
 class NoteDetailPage extends StatefulWidget {
@@ -20,6 +24,42 @@ class _NoteDetail extends State<NoteDetailPage> {
     return () => Navigator.pushNamed(
               context, page, arguments: arguments);
   }
+
+  checkBiometrics() async {
+    LocalAuthentication localAuth = LocalAuthentication();
+    AndroidAuthMessages androidAuthMessages = AndroidAuthMessages(
+        fingerprintHint: 'fingerprintHint',
+        fingerprintNotRecognized: '不能识别',
+        fingerprintSuccess: '验证成功',
+        cancelButton: '取消',
+        signInTitle: 'signInTitle',
+        fingerprintRequiredTitle: 'fingerprintRequiredTitle',
+        goToSettingsButton: 'goToSettingsButton',
+        goToSettingsDescription: 'goToSettingsDescription',
+    );
+    const iosStrings = const IOSAuthMessages(
+    cancelButton: '取消',
+    goToSettingsButton: 'goToSettingsButton',
+    goToSettingsDescription: 'goToSettingsDescription',
+    lockOut: 'Please reenable your Touch ID');
+    try {
+      bool checkBiometrics = await  localAuth.canCheckBiometrics;
+      print(checkBiometrics);
+      bool didAuthenticate =
+    await localAuth.authenticateWithBiometrics(
+          localizedReason: '验证指纹显示密码',
+          useErrorDialogs: false,
+          stickyAuth: false,
+          iOSAuthStrings: iosStrings,
+          androidAuthStrings: androidAuthMessages
+        );
+    print(didAuthenticate);
+    } catch (e) {
+      print(e);
+      print('指纹出错');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +82,10 @@ class _NoteDetail extends State<NoteDetailPage> {
           NoteListItem('邮箱', widget.noteDetail.email,  _toEdit('/edit_email', widget.noteDetail)),
           NoteListItem('手机号', widget.noteDetail.phone, _toEdit('/edit_phone', widget.noteDetail)),
           NoteListItem('密码', widget.noteDetail.password, _toEdit('/edit_password', widget.noteDetail)),
+          RaisedButton(
+            onPressed: checkBiometrics,
+            child: Text('check'),
+          )
         ],
       ),
     );

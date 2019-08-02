@@ -87,8 +87,6 @@ class AccountProvider {
 
   Future<List> rawInsert(List accounts) async {
    int id = await  db.rawInsert('insert into $tableName', accounts);
-   print(id);
-   print('idddddddddddddds');
    return accounts;
   }
 
@@ -100,6 +98,8 @@ class AccountProvider {
   Future<List<Account>> getList({limit = 10, page = 1, serchKey = ''}) async {
     final offset = (page - 1) * limit;
     List<Map> list = await db.query(tableName,
+    // where: '$colAccount like %?% or $colWebName like %?%',
+    // whereArgs: [serchKey, serchKey]
         // limit: limit,
         // offset: offset
         );

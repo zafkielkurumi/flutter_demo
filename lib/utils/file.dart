@@ -1,10 +1,13 @@
 import 'dart:io';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:ovprogresshud/progresshud.dart';
-
 import 'package:pwdflutter/db/dbHelper.dart';
 import 'package:pwdflutter/db/account.model.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:pwdflutter/utils/path.dart';
+
+import 'package:flustars/flustars.dart';
 
 class FileUtil {
   copyFile(String path) async {
@@ -21,9 +24,11 @@ class FileUtil {
 
   exportDb() async {
     String path = await DbHelper().path;
-    Directory dir = await getExternalStorageDirectory();
+    // Directory dir = await getExternalStorageDirectory();
+    String basePath = await Pathhelper().getDownloadDir();
+    await Pathhelper().getDownloadDir();
     File db = new File(path);
-    File outDb = new File(dir.path + '/backageDb.db');
+    File outDb = new File(basePath + '/backageDb.db');
     List<int> content = db.readAsBytesSync();
     var sink = outDb.openWrite();
     sink.add(content);
@@ -32,7 +37,7 @@ class FileUtil {
     // FileSystemEntity.isFile(path).then((isDir){
     //   print(isDir);
     // });
-    Progresshud.showSuccessWithStatus('导出路径为${dir.path}/backageDb.db');
+    Progresshud.showSuccessWithStatus('导出路径为${basePath}/backageDb.db');
   }
 
   importDb(String dbPath) async {
@@ -64,6 +69,8 @@ class FileUtil {
   }
 
   writeTest(String path) async {
+    DirectoryUtil.getStoragePath();
+
     Directory dir = await getExternalStorageDirectory();
     File nowDb = new File(path);
     File db = new File(dir.path + '/my.txt');
