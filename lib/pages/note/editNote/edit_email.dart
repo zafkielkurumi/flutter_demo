@@ -18,6 +18,7 @@ class _EditEmail extends State<EditEmailPage> {
     GlobalKey<FormFieldState> _key = new GlobalKey<FormFieldState>();
   @override
    Widget build(BuildContext context) {
+     print('编辑 邮箱页面');
     return Scaffold(
       appBar: AppBar(
         title: Text('修改邮箱'),

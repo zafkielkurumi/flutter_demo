@@ -28,7 +28,6 @@ dependencies:
   sqflite: ^1.1.6
   flutter_easyrefresh: ^1.2.7
   flutter_screenutil: ^0.5.3
-  flutter_list_drag_and_drop: "^0.1.6"
   intl: 0.15.8
   dio: 2.1.13
   path_provider: 1.1.2
@@ -38,6 +37,8 @@ dependencies:
   image_picker: 0.6.0+17
   local_auth: 0.4.0+1
   ovprogresshud: any
+  permission_handler: 3.2.1+1
+  photo_view: 0.4.2
 
 dev_dependencies:
   flutter_test:

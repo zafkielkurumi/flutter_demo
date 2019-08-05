@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pwdflutter/pages/index.dart';
 import 'package:pwdflutter/db/dbHelper.dart';
 import 'package:pwdflutter/router/router.dart';
+import './app.dart';
 
 // void  main() => runApp(MyApp());
 Future<Null> main() async {
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '笔记',
+      navigatorKey: App.navigatorKey,
       localizationsDelegates: [                             
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

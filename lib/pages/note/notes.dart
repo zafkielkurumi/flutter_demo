@@ -6,22 +6,20 @@ import 'package:flutter_easyrefresh/material_header.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
 import 'package:radial_button/widget/circle_floating_button.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:local_auth/auth_strings.dart';
 
-import './note_detail.dart';
-import './add_note.dart';
 import 'package:pwdflutter/db/account.model.dart' show Account;
 import './note.service.dart' show NoteService;
 import 'package:pwdflutter/utils/file.dart';
+import 'package:pwdflutter/components/search.component.dart';
 
 class NotesPage extends StatefulWidget {
   _NotesState createState() => _NotesState();
 }
 
-class _NotesState extends State<NotesPage> {
+class _NotesState extends State<NotesPage> with AutomaticKeepAliveClientMixin {
   List noteList = [];
-  final AppBar appBar = AppBar(
-    title: Text('小笔记'),
-  );
   GlobalKey<RefreshHeaderState> _headerKey = GlobalKey<RefreshHeaderState>();
   GlobalKey<RefreshFooterState> _footerKey = GlobalKey<RefreshFooterState>();
   GlobalKey _contextKey = GlobalKey();
@@ -29,15 +27,21 @@ class _NotesState extends State<NotesPage> {
       GlobalKey<CircleFloatingButtonState>();
   List<Widget> itemsActionBar;
 
+  bool didAuthenticate = false;
+
+  bool get wantKeepAlive => false;
+
   importDb() async {
-       var filePath = await FilePicker.getFilePath(
+    var filePath = await FilePicker.getFilePath(
       type: FileType.ANY,
     );
+    print('$filePath 3333333333333333333');
     if (filePath != null) {
-      print(filePath);
       floatKey.currentState.close();
       FileUtil _f = FileUtil();
-      _f.importDb(filePath);
+      await _f.importDb(filePath);
+       _easyRefreshKey.currentState.callRefresh();
+      
     }
   }
 
@@ -57,6 +61,44 @@ class _NotesState extends State<NotesPage> {
     FileUtil _f = FileUtil();
     _f.exportDb();
     floatKey.currentState.close();
+  }
+
+  checkBiometrics(_account) async {
+    if (didAuthenticate) {
+      Navigator.of(context).pushNamed('/note_detail', arguments: _account);
+      return;
+    }
+    LocalAuthentication localAuth = LocalAuthentication();
+    AndroidAuthMessages androidAuthMessages = AndroidAuthMessages(
+      fingerprintHint: '请验证指纹',
+      fingerprintNotRecognized: '不能识别',
+      fingerprintSuccess: '验证成功',
+      cancelButton: '取消',
+      signInTitle: '验证',
+      fingerprintRequiredTitle: 'fingerprintRequiredTitle',
+      goToSettingsButton: 'goToSettingsButton',
+      goToSettingsDescription: 'goToSettingsDescription',
+    );
+    const iosStrings = const IOSAuthMessages(
+        cancelButton: '取消',
+        goToSettingsButton: 'goToSettingsButton',
+        goToSettingsDescription: 'goToSettingsDescription',
+        lockOut: 'Please reenable your Touch ID');
+    try {
+      bool checkBiometrics = await localAuth.canCheckBiometrics;
+      didAuthenticate = await localAuth.authenticateWithBiometrics(
+          localizedReason: '验证指纹显示密码',
+          useErrorDialogs: false,
+          stickyAuth: false,
+          iOSAuthStrings: iosStrings,
+          androidAuthStrings: androidAuthMessages);
+      if (didAuthenticate) {
+        Navigator.of(context).pushNamed('/note_detail', arguments: _account);
+      }
+    } catch (e) {
+      print(e);
+      print('指纹出错');
+    }
   }
 
   @override
@@ -96,8 +138,15 @@ class _NotesState extends State<NotesPage> {
     super.initState();
   }
 
-  _getList() async {
-    return await NoteService.getList();
+  _getList([searchkey = '']) async {
+    return await NoteService.getList(searchkey: searchkey);
+  }
+
+  onSearch(searchkey) async {
+     List list = await _getList(searchkey);
+              setState(() {
+                this.noteList = list;
+              });
   }
 
   static Rect getWidgetGlobalRect(GlobalKey key) {
@@ -119,51 +168,59 @@ class _NotesState extends State<NotesPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('build list页面');
     return Scaffold(
-      appBar: appBar,
-      key: _contextKey,
-      body: EasyRefresh(
-        key: _easyRefreshKey,
-        child: ListView.builder(
-          itemCount: this.noteList.length,
-          itemBuilder: (BuildContext context, int index) {
-            Account account = this.noteList[index];
-            return NoteItem(account, onDelete: onDelete);
+        appBar: AppBar(
+          title: CySearch(submit: onSearch,),
+        ),
+        key: _contextKey,
+        body: EasyRefresh(
+          key: _easyRefreshKey,
+          child: ListView.builder(
+            itemCount: this.noteList.length,
+            itemBuilder: (BuildContext context, int index) {
+              Account account = this.noteList[index];
+              return NoteItem(
+                account,
+                onDelete: onDelete,
+                onCheck: checkBiometrics,
+              );
+            },
+          ),
+          refreshHeader: MaterialHeader(
+            key: this._headerKey,
+          ),
+          refreshFooter: MaterialFooter(key: _footerKey),
+          onRefresh: () async {
+            try {
+              List list = await _getList();
+              setState(() {
+                this.noteList = list;
+              });
+            } catch (e) {
+              _easyRefreshKey.currentState.callLoadMoreFinish();
+            }
           },
+          // loadMore: () {},
         ),
-        refreshHeader: MaterialHeader(
-          key: this._headerKey,
+        floatingActionButton: CircleFloatingButton.floatingActionButton(
+          key: floatKey,
+          items: itemsActionBar,
+          color: Colors.redAccent,
+          icon: Icons.menu,
+          duration: Duration(milliseconds: 400),
+          curveAnim: Curves.elasticOut,
         ),
-        refreshFooter: MaterialFooter(key: _footerKey),
-        onRefresh: () async {
-          try {
-            List list = await _getList();
-            setState(() {
-              this.noteList = list;
-            });
-          } catch (e) {
-            _easyRefreshKey.currentState.callLoadMoreFinish();
-          }
-        },
-        loadMore: () {},
-      ),
-      floatingActionButton: CircleFloatingButton.floatingActionButton(
-        key: floatKey,
-        items: itemsActionBar,
-        color: Colors.redAccent,
-        icon: Icons.menu,
-        duration: Duration(milliseconds: 400),
-        curveAnim: Curves.elasticOut,
-      ),
-    );
+      );
   }
 }
 
 class NoteItem extends StatelessWidget {
   final Account _account;
   Function onDelete = () {};
+  Function onCheck = () {};
   GlobalKey _key = GlobalKey();
-  NoteItem(this._account, {this.onDelete});
+  NoteItem(this._account, {this.onDelete, this.onCheck});
 
   _showmenu(GlobalKey key, BuildContext context, [Account account]) async {
     final RenderBox button = key.currentContext.findRenderObject();
@@ -210,7 +267,42 @@ class NoteItem extends StatelessWidget {
         }
         break;
       default:
-        {};
+        {}
+        ;
+    }
+  }
+
+  checkBiometrics(BuildContext context) async {
+    LocalAuthentication localAuth = LocalAuthentication();
+    AndroidAuthMessages androidAuthMessages = AndroidAuthMessages(
+      fingerprintHint: '请验证指纹',
+      fingerprintNotRecognized: '不能识别',
+      fingerprintSuccess: '验证成功',
+      cancelButton: '取消',
+      signInTitle: '验证',
+      fingerprintRequiredTitle: 'fingerprintRequiredTitle',
+      goToSettingsButton: 'goToSettingsButton',
+      goToSettingsDescription: 'goToSettingsDescription',
+    );
+    const iosStrings = const IOSAuthMessages(
+        cancelButton: '取消',
+        goToSettingsButton: 'goToSettingsButton',
+        goToSettingsDescription: 'goToSettingsDescription',
+        lockOut: 'Please reenable your Touch ID');
+    try {
+      bool checkBiometrics = await localAuth.canCheckBiometrics;
+      bool didAuthenticate = await localAuth.authenticateWithBiometrics(
+          localizedReason: '验证指纹显示密码',
+          useErrorDialogs: false,
+          stickyAuth: false,
+          iOSAuthStrings: iosStrings,
+          androidAuthStrings: androidAuthMessages);
+      if (didAuthenticate) {
+        Navigator.of(context).pushNamed('/note_detail', arguments: _account);
+      }
+    } catch (e) {
+      print(e);
+      print('指纹出错');
     }
   }
 
@@ -221,7 +313,7 @@ class NoteItem extends StatelessWidget {
         _showmenu(_key, context, _account);
       },
       onTap: () {
-        Navigator.of(context).pushNamed('/note_detail', arguments: _account);
+        onCheck(_account);
       },
       child: Container(
         padding: EdgeInsets.all(5),

@@ -3,10 +3,10 @@ import 'package:pwdflutter/db/dbHelper.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class NoteService {
-  static Future<List<Account>> getList() async {
+  static Future<List<Account>> getList({String searchkey = ''}) async {
     Database db = await DbHelper().open();
     AccountProvider accountProvider = AccountProvider(db);
-    List<Account> list = await accountProvider.getList();
+    List<Account> list = await accountProvider.getList(searchKey: searchkey);
     accountProvider.clear();
     return list;
   }

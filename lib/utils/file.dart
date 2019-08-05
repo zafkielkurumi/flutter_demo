@@ -34,19 +34,16 @@ class FileUtil {
     sink.add(content);
     await sink.flush();
     await sink.close();
-    // FileSystemEntity.isFile(path).then((isDir){
-    //   print(isDir);
-    // });
     Progresshud.showSuccessWithStatus('导出路径为${basePath}/backageDb.db');
   }
 
   importDb(String dbPath) async {
-    // 导入的选择的文件目录不能是本APP下的文件。。。
     String suffix = dbPath.substring(dbPath.lastIndexOf('.') + 1);
     if (suffix != 'db') {
       Progresshud.showErrorWithStatus('导入失败,因为sqflite的db文件');
       return;
     }
+    File file = new File(dbPath);
     
     try {
       Database db = await openDatabase(dbPath);

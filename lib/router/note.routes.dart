@@ -9,6 +9,7 @@ import 'package:pwdflutter/pages/note/editNote/edit_web_name.dart';
 import 'package:pwdflutter/pages/note/notes.dart';
 import 'package:pwdflutter/pages/note/editNote/edit_email.dart';
 import 'package:pwdflutter/pages/note/password_history.dart';
+import 'package:pwdflutter/pages/note/note_search.dart';
 
 
 Map<String, Function> noteRoutes = {
@@ -20,5 +21,6 @@ Map<String, Function> noteRoutes = {
 '/edit_password' : (BuildContext context , {Object arguments}) => EditPasswordPage(arguments),
 '/edit_phone' : (BuildContext context , {Object arguments}) => EditPhonePage(arguments),
 '/edit_web_name' : (BuildContext context , {Object arguments}) => EditWebNamePage(arguments),
-'/edit_email' : (BuildContext context , {Object arguments}) => EditEmailPage(arguments)
+'/edit_email' : (BuildContext context , {Object arguments}) => EditEmailPage(arguments),
+'/note_search' : (BuildContext context , {Object arguments}) => NoteSearchPage(),
 };

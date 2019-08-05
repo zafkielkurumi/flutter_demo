@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import './note.routes.dart';
+import './gallery.routes.dart';
 
-Map<String, Function>  routes = {...noteRoutes};
+Map<String, Function>  routes = {...noteRoutes, ...galleryRoutes};
 // todo something
 var onGenerateRoute = (RouteSettings settings) {
   final String name = settings.name;

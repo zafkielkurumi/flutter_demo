@@ -95,17 +95,13 @@ class AccountProvider {
   }
 
 
-  Future<List<Account>> getList({limit = 10, page = 1, serchKey = ''}) async {
+  Future<List<Account>> getList({limit = 10, page = 1, searchKey = ''}) async {
     final offset = (page - 1) * limit;
     List<Map> list = await db.query(tableName,
-    // where: '$colAccount like %?% or $colWebName like %?%',
-    // whereArgs: [serchKey, serchKey]
-        // limit: limit,
-        // offset: offset
-        );
-    // return list.map((r) {
-    //   return Account.fromMap(r);
-    // }).toList();
+      where: '$colWebName like ? or $colAccount like ?',
+      whereArgs: ['%$searchKey%', '%$searchKey%']
+    );
+
     return List.generate(list.length, (i){
       return Account.fromMap(list[i]);
     });
