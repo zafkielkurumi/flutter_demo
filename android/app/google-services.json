@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "513572360386",
+    "firebase_url": "https://fcmdemo-f0a21.firebaseio.com",
+    "project_id": "fcmdemo-f0a21",
+    "storage_bucket": "fcmdemo-f0a21.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513572360386:android:663542450e37062f",
+        "android_client_info": {
+          "package_name": "com.example.pwdflutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "513572360386-loctmooiu5di2gm0996357gjg9fkjrh5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5B1d4a9uoPzAjWuKqWYJkv_6IaHJCCy8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "513572360386-loctmooiu5di2gm0996357gjg9fkjrh5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

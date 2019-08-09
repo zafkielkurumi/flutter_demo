@@ -1,30 +1,18 @@
 import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:ovprogresshud/progresshud.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:image_picker/image_picker.dart';
+
 import 'package:pwdflutter/db/dbHelper.dart';
 import 'package:pwdflutter/db/account.model.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:pwdflutter/utils/path.dart';
 
-import 'package:flustars/flustars.dart';
-
 class FileUtil {
-  copyFile(String path) async {
-    File oldFile = new File(path);
-    Directory dir = await getExternalStorageDirectory();
-    String fileName = path.substring(path.lastIndexOf('/') + 1);
-    File newFile = new File(dir.path + '/$fileName');
-    List<int> content = oldFile.readAsBytesSync();
-    var sink = newFile.openWrite();
-    sink.add(content);
-    await sink.flush();
-    await sink.close();
-  }
-
   exportDb() async {
     String path = await DbHelper().path;
-    // Directory dir = await getExternalStorageDirectory();
+    // await db.writeAsBytes(content, flush: true, mode: FileMode.append);
     String basePath = await Pathhelper().getDownloadDir();
     await Pathhelper().getDownloadDir();
     File db = new File(path);
@@ -44,7 +32,7 @@ class FileUtil {
       return;
     }
     File file = new File(dbPath);
-    
+
     try {
       Database db = await openDatabase(dbPath);
       AccountProvider _accountProvider = new AccountProvider(db);
@@ -52,35 +40,80 @@ class FileUtil {
       db.close();
       db = await DbHelper().open();
       _accountProvider = new AccountProvider(db);
-      
+
       for (var account in list) {
         account.id = null;
         await _accountProvider.insertDb(account);
       }
       db.close();
-        Progresshud.showErrorWithStatus('导入成功');
+      Progresshud.showErrorWithStatus('导入成功');
     } catch (e) {
       print(e);
       print('出哦了');
     }
   }
 
-  writeTest(String path) async {
-    DirectoryUtil.getStoragePath();
 
-    Directory dir = await getExternalStorageDirectory();
-    File nowDb = new File(path);
-    File db = new File(dir.path + '/my.txt');
-    // db.writeAsStringSync('我顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶');
+  getImage(ImageSource source) async {
+    File file = await ImagePicker.pickImage(source: source);
+    return file;
+  }
 
-    List<int> content = nowDb.readAsBytesSync();
-    // await db.writeAsBytes(content, flush: true, mode: FileMode.append);
-    // await db.writeAsBytes(content, flush: true, mode: FileMode.append);
-    await db.writeAsString('无法圣诞节快乐附件是', flush: true, mode: FileMode.append);
-    var sink = db.openWrite(mode: FileMode.append);
-    sink.write('上帝就发刷卡积分');
-    sink.add(content);
-    await sink.flush();
-    await sink.close();
+  showdialog(BuildContext context) {
+    showGeneralDialog(
+        context: context,
+        barrierLabel: '提示',
+        barrierDismissible: true,
+        transitionDuration: Duration(milliseconds: 100),
+        barrierColor: Colors.black.withOpacity(0.5),
+        pageBuilder: (BuildContext context, Animation animation,
+            Animation secondaryAnimation) {
+          return Center(
+            child: Material(
+              child: Container(
+                width: 300,
+                height: 120,
+                color: Colors.white,
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('退出登录', style: TextStyle(fontSize: 18)),
+                    Text('是否确认退出登录?'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        GestureDetector(
+                          child: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              '取消',
+                              style: TextStyle(color: Color(0XFF1A90FF)),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        GestureDetector(
+                          child: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Text('确定',
+                                style: TextStyle(color: Color(0XFF1A90FF))),
+                          ),
+                          onTap: () {},
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

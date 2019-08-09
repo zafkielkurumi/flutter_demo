@@ -18,7 +18,7 @@ import android.os.Bundle;
 import android.os.Environment; 
 
 
-public class MainActivity extends FlutterActivity {
+public class MainActivity extends FlutterFragmentActivity {
   private static final String CHANNEL = "cy.samples.flutter/battery";
 
   @Override

@@ -1,16 +1,28 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 
 import 'package:pwdflutter/pages/index.dart';
 import 'package:pwdflutter/db/dbHelper.dart';
 import 'package:pwdflutter/router/router.dart';
 import './app.dart';
 
+void _startupJpush() async {
+    print("初始化jpush");
+    JPush jPush = new JPush();
+    await jPush.setup(
+      appKey: '9a7e2240d284a6ff015b946a',
+      channel: 'developer-default'
+    );
+    print("初始化jpush成功");
+ }
+
 // void  main() => runApp(MyApp());
 Future<Null> main() async {
   // 在应用之前做一些初始化
   await DbHelper().initDb();
+  await _startupJpush();
   runApp(new MyApp());
 }
 

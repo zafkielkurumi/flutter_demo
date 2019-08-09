@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import './gallery.service.dart';
+import './image.model.dart';
 
 class GalleryPage extends StatefulWidget {
   @override
@@ -14,13 +15,15 @@ class GalleryPage extends StatefulWidget {
 
 class _GalleryPage extends State<GalleryPage>
     with AutomaticKeepAliveClientMixin {
-  List<File> pics = [];
+  // List<File> pics = [];
+  List<String> pics = [];
   ScrollController _scrollController = new ScrollController();
   bool showTitle = false;
   Icon _icon = Icon(Icons.access_alarm);
   double _expandedHeight = 250;
 
-  bool get wantKeepAlive => true;
+  @override
+  bool get wantKeepAlive => false;
 
   getBattery() async {
     try {
@@ -30,13 +33,13 @@ class _GalleryPage extends State<GalleryPage>
   }
 
   getPick() async {
-    pics = await GalleryService().getPictrues();
+    // pics = await GalleryService().getPictrues();
+    pics = picImages;
     setState(() {});
   }
 
   @override
   void initState() {
-    super.initState();
     checkPermission().then((res) {
       if (res) {
         getPick();
@@ -59,6 +62,8 @@ class _GalleryPage extends State<GalleryPage>
         }
       }
     });
+
+    super.initState();
   }
 
   checkPermission() async {
@@ -76,7 +81,7 @@ class _GalleryPage extends State<GalleryPage>
 
   @override
   Widget build(BuildContext context) {
-    print('build list');
+    super.build(context);
     return Scaffold(
       body: CustomScrollView(
         controller: _scrollController,
@@ -90,7 +95,10 @@ class _GalleryPage extends State<GalleryPage>
               centerTitle: true,
               expandedHeight: _expandedHeight,
               flexibleSpace: FlexibleSpaceBar(
-                background: pics.isNotEmpty ? Image.file(pics[0]) : Container(),
+                background: pics.isNotEmpty ?
+                //  Image.file(pics[0]) 
+                 Image.network(pics[0]) 
+                 : Container(),
               )),
           SliverGrid.count(
             crossAxisCount: 3,
@@ -103,13 +111,18 @@ class _GalleryPage extends State<GalleryPage>
                             top: BorderSide(width: 1, color: Colors.white),
                             bottom: BorderSide(width: 1, color: Colors.white))),
                 child: Hero(
-                  tag: pics[i].path,
+                  // tag: pics[i].path,
+                  tag: pics[i],
                   child: GestureDetector(
                     onTap: () {
                       Navigator.of(context).pushNamed('/preview_image',
                           arguments: {'initialIndex': i, 'images': pics});
                     },
-                    child: Image.file(
+                    // child: Image.file(
+                    //   pics[i],
+                    //   fit: BoxFit.cover,
+                    // ),
+                    child: Image.network(
                       pics[i],
                       fit: BoxFit.cover,
                     ),

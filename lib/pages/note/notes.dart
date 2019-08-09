@@ -29,13 +29,13 @@ class _NotesState extends State<NotesPage> with AutomaticKeepAliveClientMixin {
 
   bool didAuthenticate = false;
 
-  bool get wantKeepAlive => false;
+  @override
+  bool get wantKeepAlive => true;
 
   importDb() async {
     var filePath = await FilePicker.getFilePath(
       type: FileType.ANY,
     );
-    print('$filePath 3333333333333333333');
     if (filePath != null) {
       floatKey.currentState.close();
       FileUtil _f = FileUtil();
@@ -45,16 +45,7 @@ class _NotesState extends State<NotesPage> with AutomaticKeepAliveClientMixin {
     }
   }
 
-  copyFile() async {
-    FileUtil _f = FileUtil();
-    var filePath = await FilePicker.getFilePath(
-      type: FileType.ANY,
-    );
-    if (filePath != null) {
-      _f.copyFile(filePath);
-      floatKey.currentState.close();
-    }
-  }
+
 
   exportDb() {
     // todo 导出
@@ -70,14 +61,14 @@ class _NotesState extends State<NotesPage> with AutomaticKeepAliveClientMixin {
     }
     LocalAuthentication localAuth = LocalAuthentication();
     AndroidAuthMessages androidAuthMessages = AndroidAuthMessages(
-      fingerprintHint: '请验证指纹',
+      fingerprintHint: '',
       fingerprintNotRecognized: '不能识别',
       fingerprintSuccess: '验证成功',
       cancelButton: '取消',
-      signInTitle: '验证',
-      fingerprintRequiredTitle: 'fingerprintRequiredTitle',
-      goToSettingsButton: 'goToSettingsButton',
-      goToSettingsDescription: 'goToSettingsDescription',
+      signInTitle: '指纹验证',
+      fingerprintRequiredTitle: '请设置指纹密码',
+      goToSettingsButton: '设置指纹',
+      goToSettingsDescription: '设置指纹密码验证',
     );
     const iosStrings = const IOSAuthMessages(
         cancelButton: '取消',
@@ -87,11 +78,12 @@ class _NotesState extends State<NotesPage> with AutomaticKeepAliveClientMixin {
     try {
       bool checkBiometrics = await localAuth.canCheckBiometrics;
       didAuthenticate = await localAuth.authenticateWithBiometrics(
-          localizedReason: '验证指纹显示密码',
-          useErrorDialogs: false,
+          localizedReason: '',
+          useErrorDialogs: true,
           stickyAuth: false,
           iOSAuthStrings: iosStrings,
-          androidAuthStrings: androidAuthMessages);
+          androidAuthStrings: androidAuthMessages
+          );
       if (didAuthenticate) {
         Navigator.of(context).pushNamed('/note_detail', arguments: _account);
       }
@@ -168,7 +160,7 @@ class _NotesState extends State<NotesPage> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    print('build list页面');
+    super.build(context);
     return Scaffold(
         appBar: AppBar(
           title: CySearch(submit: onSearch,),

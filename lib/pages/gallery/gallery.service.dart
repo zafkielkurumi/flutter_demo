@@ -16,7 +16,6 @@ class GalleryService {
        if (isFile) {
          pic.add(new File(item.path));
        }
-      //  print('$isFile aaaaaaaaaa   $type');
      }
      return pic;
   }

@@ -44,9 +44,10 @@ class _PreviewImagePage extends State<PreviewImagePage> {
             var image = widget.images[index];
             return PhotoViewGalleryPageOptions(
               
-              imageProvider:  FileImage(image),
+              // imageProvider:  FileImage(image),
+              imageProvider:  NetworkImage(image),
               initialScale: PhotoViewComputedScale.contained * 0.9,
-              heroTag: image.path,
+              heroTag: image,
             );
           },
           itemCount: widget.images.length,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:pwdflutter/pages/gallery/gallery.dart';
 import 'package:pwdflutter/pages/note/notes.dart';
+import 'package:pwdflutter/pages/animation/animation.dart';
 
 
 class IndexPage extends StatefulWidget {
@@ -13,16 +14,21 @@ class IndexPage extends StatefulWidget {
 }
 
 
-class _IndexPage extends State<IndexPage> {
-  final List<Widget> _pages = [GalleryPage(), NotesPage()];
+class _IndexPage extends State<IndexPage> with AutomaticKeepAliveClientMixin {
+  final List<Widget> _pages = [NotesPage(), GalleryPage(), AnimationPage()];
   final PageController _pageController = PageController();
   final List<BottomNavigationBarItem> tabs = [ 
-    BottomNavigationBarItem(title: Text('游廊'), backgroundColor: Colors.red, icon: Icon(Icons.collections)), 
+     
     BottomNavigationBarItem(title: Text('笔记'), backgroundColor: Colors.red, icon: Icon(Icons.assignment)), 
+    BottomNavigationBarItem(title: Text('游廊'), backgroundColor: Colors.red, icon: Icon(Icons.collections)),
+    BottomNavigationBarItem(title: Text('动画'), backgroundColor: Colors.red, icon: Icon(Icons.gamepad)),
+
   ];
   int _current = 0;
   DateTime currentBackPressTime;
   
+  @override
+  bool get  wantKeepAlive => true;
 
   Future<bool> _onWillPop() {
     DateTime now = DateTime.now();

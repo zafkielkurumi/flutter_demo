@@ -31,7 +31,6 @@ class _NoteDetail extends State<NoteDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('build 详情页面');
     return Scaffold(
       appBar: AppBar(
         title: Text('详情'),
