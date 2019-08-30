@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'dart:io';
+import 'dart:math' as math;
+
 import 'package:image_picker/image_picker.dart';
 
 import 'package:pwdflutter/utils/file.dart';
 import './canvas.service.dart';
+import './star.dart';
 
 class AnimationPage extends StatefulWidget {
   @override
@@ -13,11 +16,49 @@ class AnimationPage extends StatefulWidget {
   }
 }
 
-class _AnimationPage extends State<AnimationPage> {
+class _AnimationPage extends State<AnimationPage>
+    with SingleTickerProviderStateMixin {
   PersistentBottomSheetController controller;
+  double r = 80;
+  AnimationController _animationController;
+  CurvedAnimation _curve;
+  Tween _tween = new Tween(begin: 75.0, end: 90.0);
+  Animation<double> animation;
   var image;
+  String txt = 'start';
   @override
   void initState() {
+    // Tween 要使用需要使用 animate 方法传入controller
+    _animationController =
+        new AnimationController(duration: Duration(seconds: 2), vsync: this);
+    // _curve = new CurvedAnimation(parent: _animationController, curve: Curves.easeInCirc)..addStatusListener((status) {
+    //   if (status == AnimationStatus.completed) {
+    //     _animationController.reverse();
+    //   } else if (status == AnimationStatus.dismissed) {
+    //     _animationController.forward();
+    //   }
+    // });
+
+    animation = Tween(begin: 120.0, end: 75.0).animate(
+        CurveTween(curve: Curves.linear).animate(_animationController)
+          ..addListener(() {
+            setState(() {
+              r = animation.value;
+            });
+          })
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+                setState(() {
+                 txt = 'start'; 
+                });
+              _animationController.reverse();
+            } else if (status == AnimationStatus.dismissed) {
+              setState(() {
+               txt = 'end'; 
+              });
+              _animationController.forward();
+            }
+          }));
     super.initState();
   }
 
@@ -69,7 +110,9 @@ class _AnimationPage extends State<AnimationPage> {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: () async {},
+          onPressed: () async {
+            _animationController.forward();
+          },
         ),
         body: ListView(
           children: <Widget>[
@@ -80,7 +123,7 @@ class _AnimationPage extends State<AnimationPage> {
                       width: image != null ? image.width.toDouble() : 300,
                       height: image != null ? image.height.toDouble() : 300,
                       child: CustomPaint(
-                        painter: StartPanter(image: image),
+                        painter: StartPanter(image: image, wr: r),
                       ),
                     ),
                   )
@@ -90,28 +133,41 @@ class _AnimationPage extends State<AnimationPage> {
                       choseImage();
                     },
                   ),
-            AnimeView(),
-            FittedBox(
-              child: SizedBox(
-                width: 50,
-                height: 50,
-                child: CircularProgressIndicator(
-                    // valueColor: ,
-                    ),
-              ),
+            StarView(),
+            Container(
+              height: animation.value,
+              width: animation.value,
+              color: Colors.pink,
             ),
-            Opacity(
-              opacity: 0.6,
-              child: Text('data'),
-            )
+            AnimatedSwitcher(
+              duration: Duration(seconds: 1),
+              child: Text('$txt', 
+              key: ValueKey(txt),),
+              // Flutter API提供的关于AnimatedWidget的示例包括：AnimatedBuilder、AnimatedModalBarrier、DecoratedBoxTransition、
+              // FadeTransition、PositionedTransition、
+              // RelativePositionedTransition、RotationTransition、ScaleTransition、SizeTransition、SlideTransition。
+               transitionBuilder: (child, anim) {
+                      return RotationTransition(child: child, turns: anim);
+              },
+              
+            ),
+            AnimeView()
           ],
         ));
   }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 }
 
+// CustomPainter demo
 class StartPanter extends CustomPainter {
   ui.Image image;
-  StartPanter({this.image});
+  double wr;
+  StartPanter({this.image, this.wr = 75});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -125,9 +181,9 @@ class StartPanter extends CustomPainter {
       canvas.drawImage(image, Offset(0, 0), paint);
       canvas.drawCircle(Offset(75, 75), 50, paint);
       canvas.translate(80, height / 2);
-      canvas.drawPath(nStarPath(5, 30, 80), paint);
+      canvas.drawPath(nStarPath(num: 5, r: 30, R: wr), paint);
       canvas.translate(width - 160, 0);
-      canvas.drawPath(nStarPath(5, 30, 80), paint);
+      canvas.drawPath(nStarPath(num: 5, r: 30, R: wr), paint);
     }
   }
 
@@ -152,7 +208,7 @@ class _AnimeView extends State<AnimeView> with TickerProviderStateMixin {
   @override
   void initState() {
     controller = new AnimationController(
-        duration: const Duration(milliseconds: 2000), vsync: this);
+        duration: const Duration(milliseconds: 2000), vsync: this)..repeat();
     curve = new CurvedAnimation(parent: controller, curve: Curves.easeIn);
     super.initState();
   }
@@ -165,10 +221,11 @@ class _AnimeView extends State<AnimeView> with TickerProviderStateMixin {
         Container(
           // width: 100,
           // height: 100,
-          child: FadeTransition(
-            opacity: curve,
-            child: Icon(Icons.ac_unit),
-          ),
+          // child: FadeTransition(
+          //   opacity: curve,
+          //   child: Icon(Icons.ac_unit),
+          // ),
+          child: Spinning(controller: controller,),
         ),
         RaisedButton(
           onPressed: () {
@@ -177,6 +234,27 @@ class _AnimeView extends State<AnimeView> with TickerProviderStateMixin {
           child: Icon(Icons.ac_unit),
         )
       ],
+    );
+  }
+}
+
+// AnimatedWidget demo
+class Spinning extends AnimatedWidget {
+   const Spinning({Key key, AnimationController controller})
+       : super(key: key, listenable: controller);
+
+  Animation<double> get _progress => listenable;
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Transform.rotate(
+      angle: _progress.value * 2 * math.pi,
+      child: Container(
+        width: 100,
+        height: 100,
+        color: Colors.pink,
+      ),
     );
   }
 }

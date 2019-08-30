@@ -45,9 +45,6 @@ class _CySearch extends State<CySearch> {
               decoration: InputDecoration(
                 suffixIcon: GestureDetector(
                   child: AnimatedSwitcher(
-                    // transitionBuilder: (child, anim) {
-                    //   return ScaleTransition(child: child, scale: anim);
-                    // },
                     duration: Duration(milliseconds: 300),
                     child: showSuffix
                         ? Icon(Icons.highlight_off)

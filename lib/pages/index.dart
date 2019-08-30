@@ -4,6 +4,7 @@ import 'package:pwdflutter/pages/gallery/gallery.dart';
 import 'package:pwdflutter/pages/note/notes.dart';
 import 'package:pwdflutter/pages/animation/animation.dart';
 
+import 'package:pwdflutter/pages/tests/test_state.page.dart';
 
 class IndexPage extends StatefulWidget {
   @override
@@ -15,15 +16,15 @@ class IndexPage extends StatefulWidget {
 
 
 class _IndexPage extends State<IndexPage> with AutomaticKeepAliveClientMixin {
-  final List<Widget> _pages = [NotesPage(), GalleryPage(), AnimationPage()];
+  final List<Widget> _pages = [NotesPage(), GalleryPage(), AnimationPage(), TestSatePage()];
   final PageController _pageController = PageController();
   final List<BottomNavigationBarItem> tabs = [ 
-     
     BottomNavigationBarItem(title: Text('笔记'), backgroundColor: Colors.red, icon: Icon(Icons.assignment)), 
     BottomNavigationBarItem(title: Text('游廊'), backgroundColor: Colors.red, icon: Icon(Icons.collections)),
     BottomNavigationBarItem(title: Text('动画'), backgroundColor: Colors.red, icon: Icon(Icons.gamepad)),
-
+    BottomNavigationBarItem(title: Text('测试'), backgroundColor: Colors.red, icon: Icon(Icons.textsms)),
   ];
+  
   int _current = 0;
   DateTime currentBackPressTime;
   
@@ -42,6 +43,7 @@ class _IndexPage extends State<IndexPage> with AutomaticKeepAliveClientMixin {
   }
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: WillPopScope(
         onWillPop: _onWillPop,
@@ -59,9 +61,8 @@ class _IndexPage extends State<IndexPage> with AutomaticKeepAliveClientMixin {
         currentIndex: _current,
         onTap: (int index) {
            _pageController.jumpToPage(index);
-          setState(() {});
         },
-        // type: BottomNavigationBarType.fixed, // 大于3还是4 需要设置为fixed 
+        type: BottomNavigationBarType.fixed, // 大于3 需要设置为fixed 
         fixedColor: Colors.red,
         items: tabs,
       ),

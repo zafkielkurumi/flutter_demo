@@ -1,9 +1,13 @@
-import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pwdflutter/helper/image.helper.dart';
+import 'package:pwdflutter/router/gallery.routes.dart';
 
-import './gallery.service.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 import './image.model.dart';
 
 class GalleryPage extends StatefulWidget {
@@ -115,16 +119,26 @@ class _GalleryPage extends State<GalleryPage>
                   tag: pics[i],
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed('/preview_image',
+                      Navigator.of(context).pushNamed(GalleryRoutes.previewImage,
                           arguments: {'initialIndex': i, 'images': pics});
                     },
-                    // child: Image.file(
-                    //   pics[i],
-                    //   fit: BoxFit.cover,
-                    // ),
-                    child: Image.network(
-                      pics[i],
-                      fit: BoxFit.cover,
+                    child: ExtendedImage.network(
+                       pics[i], 
+                      cache: true,
+                      loadStateChanged: (ExtendedImageState state) {
+                        switch (state.extendedImageLoadState) {
+                          case LoadState.loading:
+                            return ImageHeler.placeHoder();
+                            break;
+                          case LoadState.failed:
+                            return ImageHeler.error();
+                            break;
+                          case LoadState.completed:
+                            return ExtendedRawImage(image: state.extendedImageInfo?.image,);
+                          default: 
+                            return ImageHeler.error();
+                        }
+                      }
                     ),
                   ),
                 ),

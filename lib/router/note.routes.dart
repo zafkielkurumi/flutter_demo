@@ -12,15 +12,29 @@ import 'package:pwdflutter/pages/note/password_history.dart';
 import 'package:pwdflutter/pages/note/note_search.dart';
 
 
+
+abstract class NoteRoutes {
+  static String notesPage = '/notes';
+  static String noteDetail = '/note_detail';
+  static String addNote = '/add_note';
+  static String noteHistory = '/note_history';
+  static String editAccountName = '/edit_account_name';
+  static String editPassword = '/edit_password';
+  static String editPhone = '/edit_phone';
+  static String editWebName = '/edit_web_name';
+  static String editEmail = '/edit_email';
+  static String noteSearch = '/note_search';
+}
+
 Map<String, Function> noteRoutes = {
-'/notes' : (BuildContext context , {arguments}) => NotesPage(),
-'/note_detail' : (BuildContext context , {Object arguments}) => NoteDetailPage(arguments),
-'/add_note' : (BuildContext context , {Object arguments}) => AddNotePage(),
-'/note_history' : (BuildContext context , {Object arguments}) => PasswordHistory(arguments),
-'/edit_account_name' : (BuildContext context , {Object arguments}) => EditAccountNamePage(arguments),
-'/edit_password' : (BuildContext context , {Object arguments}) => EditPasswordPage(arguments),
-'/edit_phone' : (BuildContext context , {Object arguments}) => EditPhonePage(arguments),
-'/edit_web_name' : (BuildContext context , {Object arguments}) => EditWebNamePage(arguments),
-'/edit_email' : (BuildContext context , {Object arguments}) => EditEmailPage(arguments),
-'/note_search' : (BuildContext context , {Object arguments}) => NoteSearchPage(),
+NoteRoutes.notesPage : (BuildContext context , {arguments}) => NotesPage(),
+NoteRoutes.noteDetail : (BuildContext context , {Object arguments}) => NoteDetailPage(arguments),
+NoteRoutes.addNote : (BuildContext context , {Object arguments}) => AddNotePage(),
+NoteRoutes.noteHistory : (BuildContext context , {Object arguments}) => PasswordHistory(arguments),
+NoteRoutes.editAccountName : (BuildContext context , {Object arguments}) => EditAccountNamePage(arguments),
+NoteRoutes.editPassword : (BuildContext context , {Object arguments}) => EditPasswordPage(arguments),
+NoteRoutes.editPhone : (BuildContext context , {Object arguments}) => EditPhonePage(arguments),
+NoteRoutes.editWebName : (BuildContext context , {Object arguments}) => EditWebNamePage(arguments),
+NoteRoutes.editEmail : (BuildContext context , {Object arguments}) => EditEmailPage(arguments),
+NoteRoutes.noteSearch : (BuildContext context , {Object arguments}) => NoteSearchPage(),
 };

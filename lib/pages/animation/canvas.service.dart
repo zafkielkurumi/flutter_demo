@@ -31,7 +31,7 @@ Path gridPath(int step, Size winSize) {
  * @param r   内接圆半径
  * @return n角星路径
  */
-Path nStarPath(int num, double R, double r) {
+Path nStarPath({int num, double R, double r}) {
   Path path = new Path();
   double perDeg = 360 / num; //尖角的度数
   double degA = perDeg / 2 / 2;

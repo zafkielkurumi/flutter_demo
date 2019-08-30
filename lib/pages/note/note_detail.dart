@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pwdflutter/models/account.model.dart';
 
-
-
-import 'package:pwdflutter/db/account.model.dart' show Account;
+import 'package:pwdflutter/router/note.routes.dart';
 
 class NoteDetailPage extends StatefulWidget {
   final Account noteDetail;
@@ -38,7 +37,7 @@ class _NoteDetail extends State<NoteDetailPage> {
           FlatButton(
             onPressed: () {
               Navigator.pushNamed(
-              context, '/note_history', arguments: widget.noteDetail.historyPassword);
+              context, NoteRoutes.noteHistory, arguments: widget.noteDetail.historyPassword);
             },
             child: Text('历史', style: TextStyle(color: Colors.white),),
           )
@@ -46,11 +45,11 @@ class _NoteDetail extends State<NoteDetailPage> {
       ),
       body: ListView(
         children: <Widget>[
-          NoteListItem('网站', widget.noteDetail.webName, _toEdit('/edit_web_name', widget.noteDetail)),
-          NoteListItem('用户名', widget.noteDetail.account, _toEdit('/edit_account_name', widget.noteDetail)),
-          NoteListItem('邮箱', widget.noteDetail.email,  _toEdit('/edit_email', widget.noteDetail)),
-          NoteListItem('手机号', widget.noteDetail.phone, _toEdit('/edit_phone', widget.noteDetail)),
-          NoteListItem('密码', widget.noteDetail.password, _toEdit('/edit_password', widget.noteDetail)),
+          NoteListItem('网站', widget.noteDetail.webName, _toEdit(NoteRoutes.editWebName, widget.noteDetail)),
+          NoteListItem('用户名', widget.noteDetail.account, _toEdit(NoteRoutes.editAccountName, widget.noteDetail)),
+          NoteListItem('邮箱', widget.noteDetail.email,  _toEdit(NoteRoutes.editEmail, widget.noteDetail)),
+          NoteListItem('手机号', widget.noteDetail.phone, _toEdit(NoteRoutes.editPhone, widget.noteDetail)),
+          NoteListItem('密码', widget.noteDetail.password, _toEdit(NoteRoutes.editPassword, widget.noteDetail)),
         ],
       ),
     );

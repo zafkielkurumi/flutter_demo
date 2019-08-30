@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pwdflutter/models/account.model.dart';
+import 'package:pwdflutter/services/note.service.dart';
 
-import 'package:pwdflutter/db/account.model.dart' show Account;
-import '../note.service.dart';
 
 class EditAccountNamePage extends StatefulWidget {
   final Account _account;
@@ -19,6 +19,7 @@ class _EditAccountName extends State<EditAccountNamePage> {
   @override
    Widget build(BuildContext context) {
     return Scaffold(
+      endDrawer: Drawer(),
       appBar: AppBar(
         title: Text('修改用户名'),
         actions: <Widget>[

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pwdflutter/db/account.model.dart' show Account;
-import '../note.service.dart' show NoteService;
+import 'package:pwdflutter/models/account.model.dart';
+import 'package:pwdflutter/services/note.service.dart';
 
 class EditPasswordPage extends StatefulWidget {
   final Account _account;

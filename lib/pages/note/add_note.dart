@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pwdflutter/models/account.model.dart';
+import 'package:pwdflutter/services/note.service.dart';
 
-import './note.service.dart' show NoteService;
-import 'package:pwdflutter/db/account.model.dart' show Account;
 
 class AddNotePage extends StatefulWidget {
   AddNotePage({Key key}) : super(key: key);

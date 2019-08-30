@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:ovprogresshud/progresshud.dart';
+import 'package:pwdflutter/db/account.provider.dart';
+import 'package:pwdflutter/models/account.model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:pwdflutter/db/dbHelper.dart';
-import 'package:pwdflutter/db/account.model.dart';
 import 'package:pwdflutter/utils/path.dart';
+import 'package:oktoast/oktoast.dart' as OkToast;
 
 class FileUtil {
   exportDb() async {
@@ -22,13 +23,15 @@ class FileUtil {
     sink.add(content);
     await sink.flush();
     await sink.close();
-    Progresshud.showSuccessWithStatus('导出路径为${basePath}/backageDb.db');
+    OkToast.showToast('导出路径为${basePath}/backageDb.db');
+    // Progresshud.showSuccessWithStatus('导出路径为${basePath}/backageDb.db');
   }
 
   importDb(String dbPath) async {
     String suffix = dbPath.substring(dbPath.lastIndexOf('.') + 1);
     if (suffix != 'db') {
-      Progresshud.showErrorWithStatus('导入失败,因为sqflite的db文件');
+      // Progresshud.showErrorWithStatus('导入失败,因为sqflite的db文件');
+      OkToast.showToast('导入失败,因为sqflite的db文件');
       return;
     }
     File file = new File(dbPath);
@@ -46,7 +49,8 @@ class FileUtil {
         await _accountProvider.insertDb(account);
       }
       db.close();
-      Progresshud.showErrorWithStatus('导入成功');
+      // Progresshud.showErrorWithStatus('导入成功');
+      OkToast.showToast('导入成功');
     } catch (e) {
       print(e);
       print('出哦了');

@@ -1,5 +1,7 @@
-import 'package:pwdflutter/db/account.model.dart';
+
+import 'package:pwdflutter/db/account.provider.dart';
 import 'package:pwdflutter/db/dbHelper.dart';
+import 'package:pwdflutter/models/account.model.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class NoteService {
