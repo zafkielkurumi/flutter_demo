@@ -41,12 +41,12 @@ class _ProviderPageState extends State<ProviderPage> {
                 Builder(
                   builder: (BuildContext context) {
                     print('build');
-                    return Text('${model.count}');
+                    return Text('${model.count} build');
                   },
                 ),
                 Consumer<ProviderModel>(
                   builder: (context, model) {
-                    return Text('${model.count}');
+                    return Text('${model.count} consummnu');
                   },
                 ),
                 Expanded(
@@ -77,12 +77,14 @@ class _ProviderPageState extends State<ProviderPage> {
 class Child1 extends StatelessWidget {
   const Child1({Key key}) : super(key: key);
 
+
+
   @override
   Widget build(BuildContext context) {
     print('build child1');
     ProviderModel model = ChangeNotifierProvider.of(context);
     return Container(
-      child: Text('${model.count}'),
+      child: Text('${model.count} child1'),
     );
   }
 }

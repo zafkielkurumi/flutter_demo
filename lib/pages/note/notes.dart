@@ -150,42 +150,6 @@ class NoteItem extends StatelessWidget {
   GlobalKey _key = GlobalKey();
   NoteItem(this._account);
 
-  _showmenu(GlobalKey key, BuildContext context, [Account account]) async {
-    final RenderBox button = key.currentContext.findRenderObject();
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
-    var container = Offset.zero & overlay.size;
-    var rect = Rect.fromPoints(
-      button.localToGlobal(Offset.zero, ancestor: overlay),
-      button.localToGlobal(button.size.bottomRight(Offset.zero),
-          ancestor: overlay),
-    );
-    final RelativeRect position = RelativeRect.fromLTRB(
-      rect.left - container.left,
-      rect.top - container.top + rect.size.height,
-      container.right - rect.right,
-      container.bottom - rect.bottom,
-    );
-    // final RelativeRect position = RelativeRect.fromRect(
-    //   Rect.fromPoints(
-    //     button.localToGlobal(Offset.zero, ancestor: overlay),
-    //     button.localToGlobal(button.size.bottomRight(Offset.zero),
-    //         ancestor: overlay),
-    //   ),
-    //   Offset.zero & overlay.size,
-    // );
-    var res = await showMenu(
-        context: context,
-        position: position,
-        items: <PopupMenuEntry>[
-          PopupMenuItem(
-            value: 1,
-            child: Text('删除'),
-            // height: 50,
-          )
-        ]);
-    onMenuSelect(res, account);
-  }
-
   onMenuSelect(val, [Account account]) {
     switch (val) {
       case 1:
@@ -211,7 +175,9 @@ class NoteItem extends StatelessWidget {
           caption: '删除',
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () {},
+          onTap: () {
+            noteModel.deleteNote(_account);
+          },
         ),
       ],
       child: InkWell(

@@ -30,10 +30,7 @@ class _CySearch extends State<CySearch> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Container(
+    return Container(
             constraints: BoxConstraints(maxHeight: 40),
             child: TextFormField(
               controller: _controller,
@@ -58,7 +55,7 @@ class _CySearch extends State<CySearch> {
                 filled: true,
                 fillColor: Color(0xfff6f6f6),
                 contentPadding:
-                    const EdgeInsets.only(left: 14.0, bottom: 4.0, top: 4.0),
+                    const EdgeInsets.only(left: 14.0,  top: 8.0),
                 hintText: '网站名或账号',
                 focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),
@@ -69,16 +66,7 @@ class _CySearch extends State<CySearch> {
                 ),
               ),
             ),
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () {
-            widget.submit(_controller.text);
-          },
-        )
-      ],
-    );
+          );
   }
 
   @override

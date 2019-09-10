@@ -34,8 +34,9 @@ class NotesModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteNote(int index) {
-    _list.removeAt(index);
+  void deleteNote(Account account) {
+    _list.remove(account);
+    NoteService.deleteAccount(account);
     notifyListeners();
   }
 }
